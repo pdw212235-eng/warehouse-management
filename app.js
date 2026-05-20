@@ -403,7 +403,7 @@ function renderStock() {
   if (currentStockFilter !== 'ALL') data = data.filter(s=>s.category===currentStockFilter);
 
   const hiddenInView = data.filter(s => hiddenItems.has(s.category+':'+s.model));
-  if (!showHidden) data = data.filter(s => !hiddenItems.has(s.category+':'+s.model));
+  data = data.filter(s => !hiddenItems.has(s.category+':'+s.model));
 
   if (!data.length && !hiddenInView.length) {
     list.innerHTML='<div class="empty-state"><div class="icon">📦</div>기록된 재고가 없습니다</div>';
