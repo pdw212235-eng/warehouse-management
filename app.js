@@ -12,7 +12,7 @@ let stockChart = null;
 let currentSerial = null;
 let detailItem = null;
 let detailTypeFilter = 'ALL';
-let hiddenItems = new Set(JSON.parse(localStorage.getItem('hiddenItems') || '[]'));
+let hiddenItems = new Set();
 let showHidden = false;
 
 // ─── 초기화 ─────────────────────────────────────────────
@@ -36,6 +36,7 @@ async function loadData() {
     settings  = data.settings  || getDefaultSettings();
     records   = (data.records || []).map(normalizeRecord);
     stockData = data.stock     || [];
+    hiddenItems = new Set(settings.hiddenItems || []);
 
     lastSyncTime = new Date();
     setSyncStatus('ok');
@@ -125,7 +126,8 @@ async function saveSettings() {
       PCB:     splitCSV('pcb-models'),
       HARNESS: splitCSV('harness-models'),
     },
-    minStock
+    minStock,
+    hiddenItems: [...hiddenItems]
   };
   setLoading(true);
   try {
@@ -505,18 +507,30 @@ function openItemDetail(category, model) {
   document.getElementById('detail-drawer').classList.add('visible');
 }
 
-function toggleHideItem() {
+async function toggleHideItem() {
   if (!detailItem) return;
   const key = detailItem.category + ':' + detailItem.model;
-  if (hiddenItems.has(key)) {
+  const wasHidden = hiddenItems.has(key);
+  if (wasHidden) {
     hiddenItems.delete(key);
   } else {
     hiddenItems.add(key);
   }
-  localStorage.setItem('hiddenItems', JSON.stringify([...hiddenItems]));
+
+  const updatedSettings = { ...settings, hiddenItems: [...hiddenItems] };
+  setLoading(true);
+  try {
+    await fetchPost({ action: 'saveSettings', settings: updatedSettings });
+    settings = updatedSettings;
+    showToast(wasHidden ? '숨김이 해제되었습니다' : '항목이 숨겨졌습니다', 'success');
+  } catch(e) {
+    if (wasHidden) hiddenItems.add(key); else hiddenItems.delete(key);
+    showToast('저장 실패: ' + e.message, 'error');
+  } finally {
+    setLoading(false);
+  }
   renderStock();
   closeItemDetail();
-  showToast(hiddenItems.has(key) ? '항목이 숨겨졌습니다' : '숨김이 해제되었습니다', 'success');
 }
 
 function closeItemDetail() {
