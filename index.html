@@ -95,7 +95,7 @@
     <select id="category" onchange="resetSerial(); updateModels()">
       <option value="">-- 선택 --</option>
       <option value="MCU">MCU</option>
-      <option value="MINI_PC">MINI PC</option>
+      <option value="PC">PC</option>
       <option value="SMPS">SMPS</option>
       <option value="PCB">PCB & 전자부품</option>
       <option value="HARNESS">케이블</option>
@@ -155,7 +155,7 @@
     <div class="stock-filter" id="stock-filter" style="margin-bottom:0;flex:1">
       <button class="filter-chip active" onclick="filterStock('ALL', this)">전체</button>
       <button class="filter-chip" onclick="filterStock('MCU', this)">MCU</button>
-      <button class="filter-chip" onclick="filterStock('MINI_PC', this)">MINI PC</button>
+      <button class="filter-chip" onclick="filterStock('PC', this)">PC</button>
       <button class="filter-chip" onclick="filterStock('SMPS', this)">SMPS</button>
       <button class="filter-chip" onclick="filterStock('PCB', this)">PCB</button>
       <button class="filter-chip" onclick="filterStock('HARNESS', this)">케이블</button>
@@ -180,8 +180,8 @@
     <input type="text" id="mcu-models" style="width:100%;text-align:left">
   </div>
   <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:8px">
-    <label>MINI PC 모델</label>
-    <input type="text" id="minipc-models" style="width:100%;text-align:left">
+    <label>PC 모델</label>
+    <input type="text" id="pc-models" style="width:100%;text-align:left">
   </div>
   <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:8px">
     <label>SMPS 모델</label>

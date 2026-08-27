@@ -62,7 +62,7 @@ function setSyncStatus(state) {
 function loadSettingsUI(s) {
   document.getElementById('operators-input').value = (s.operators||[]).join(', ');
   document.getElementById('mcu-models').value      = (s.models?.MCU||[]).join(', ');
-  document.getElementById('minipc-models').value   = (s.models?.MINI_PC||[]).join(', ');
+  document.getElementById('pc-models').value   = (s.models?.PC||[]).join(', ');
   document.getElementById('smps-models').value     = (s.models?.SMPS||[]).join(', ');
   document.getElementById('pcb-models').value      = (s.models?.PCB||[]).join(', ');
   document.getElementById('harness-models').value  = (s.models?.HARNESS||[]).join(', ');
@@ -83,8 +83,8 @@ function renderMinStockSettings(s) {
   const container = document.getElementById('minstock-container');
   const models    = s.models   || {};
   const minStock  = s.minStock || {};
-  const cats = ['MCU', 'MINI_PC', 'SMPS', 'PCB', 'HARNESS'];
-  const catLabel = {MCU:'MCU', MINI_PC:'MINI PC', SMPS:'SMPS', PCB:'PCB & 전자부품', HARNESS:'케이블'};
+  const cats = ['MCU', 'PC', 'SMPS', 'PCB', 'HARNESS'];
+  const catLabel = {MCU:'MCU', PC:'PC', SMPS:'SMPS', PCB:'PCB & 전자부품', HARNESS:'케이블'};
 
   let html = '';
   cats.forEach(cat => {
@@ -121,7 +121,7 @@ async function saveSettings() {
     operators: splitCSV('operators-input'),
     models: {
       MCU:     splitCSV('mcu-models'),
-      MINI_PC: splitCSV('minipc-models'),
+      PC: splitCSV('pc-models'),
       SMPS:    splitCSV('smps-models'),
       PCB:     splitCSV('pcb-models'),
       HARNESS: splitCSV('harness-models'),
@@ -219,7 +219,7 @@ function resetSerial() {
 
 function updateSerialUI() {
   const cat = document.getElementById('category').value;
-  const isSerialCat = cat === 'MCU' || cat === 'MINI_PC';
+  const isSerialCat = cat === 'MCU' || cat === 'PC';
   const serialRow = document.getElementById('serial-row');
   const qtyInput  = document.getElementById('qty-input');
   const qtyBtns   = document.querySelectorAll('.qty-controls button');
@@ -309,13 +309,13 @@ async function fetchPost(body) {
 
 // ─── 재고 차트 ───────────────────────────────────────────
 const CAT_COLORS = {
-  MCU: '#4f8cff', MINI_PC: '#00e0a1', SMPS: '#ffb347', PCB: '#a78bfa', HARNESS: '#fb923c'
+  MCU: '#4f8cff', PC: '#00e0a1', SMPS: '#ffb347', PCB: '#a78bfa', HARNESS: '#fb923c'
 };
-const CAT_LABEL = {MCU:'MCU', MINI_PC:'MINI PC', SMPS:'SMPS', PCB:'PCB', HARNESS:'케이블'};
+const CAT_LABEL = {MCU:'MCU', PC:'PC', SMPS:'SMPS', PCB:'PCB', HARNESS:'케이블'};
 
 function buildChartData() {
   if (currentStockFilter === 'ALL') {
-    const cats = ['MCU', 'MINI_PC', 'SMPS', 'PCB', 'HARNESS'];
+    const cats = ['MCU', 'PC', 'SMPS', 'PCB', 'HARNESS'];
     return {
       labels: cats.map(c => CAT_LABEL[c]),
       values: cats.map(c => stockData.filter(s => s.category === c).reduce((sum, s) => sum + (s.qty || 0), 0)),
@@ -715,7 +715,7 @@ function showToast(msg,type='success') {
 function getDefaultSettings() {
   return {
     operators:['창고지기'],
-    models:{MCU:['STM32F4','ATmega328','ESP32'],MINI_PC:['Raspberry Pi 4','Jetson Nano'],SMPS:['24V 5A','12V 10A'],PCB:['메인보드 Rev1','센서보드 Rev2'],HARNESS:['전원 하네스 A','CAN 케이블']},
+    models:{MCU:['STM32F4','ATmega328','ESP32'],PC:['Raspberry Pi 4','Jetson Nano'],SMPS:['24V 5A','12V 10A'],PCB:['메인보드 Rev1','센서보드 Rev2'],HARNESS:['전원 하네스 A','CAN 케이블']},
     minStock:{}
   };
 }
