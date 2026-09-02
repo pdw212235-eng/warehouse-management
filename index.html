@@ -35,17 +35,17 @@
 <div class="detail-drawer" id="detail-drawer">
   <div class="detail-handle"></div>
   <div class="detail-header">
-    <div class="detail-heading">
+    <div>
       <div class="detail-title" id="detail-title"></div>
       <div class="detail-cat" id="detail-cat"></div>
     </div>
-    <div class="detail-note-wrap">
-      <textarea id="detail-note" class="detail-note" rows="2"
-        placeholder="메모, 설명 · 누구나 수정 가능"
-        oninput="onNoteInput()" onblur="saveItemNote()"></textarea>
-      <div class="detail-note-status" id="detail-note-status"></div>
-    </div>
     <button class="detail-close" onclick="closeItemDetail()">✕</button>
+  </div>
+  <div class="detail-note-wrap">
+    <textarea id="detail-note" class="detail-note" rows="2"
+      placeholder="메모, 설명 · 누구나 수정 가능"
+      oninput="onNoteInput()" onblur="saveItemNote()"></textarea>
+    <div class="detail-note-status" id="detail-note-status"></div>
   </div>
   <div class="detail-stats" id="detail-stats"></div>
   <div class="detail-action">
