@@ -251,6 +251,21 @@ nav button.active { color: var(--accent); border-bottom-color: var(--accent); }
 .detail-cat { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-top: 4px; }
 .detail-close { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 0; line-height: 1; }
 .detail-close:hover { color: var(--text); }
+.detail-note-wrap { padding: 14px 0 0; }
+.detail-note {
+  width: 100%; box-sizing: border-box; resize: vertical; min-height: 52px;
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); font-family: var(--sans); font-size: 13px; line-height: 1.5;
+  padding: 10px 12px;
+}
+.detail-note::placeholder { color: var(--muted); }
+.detail-note:focus { outline: none; border-color: var(--accent); }
+.detail-note-status {
+  font-family: var(--mono); font-size: 10px; color: var(--muted);
+  letter-spacing: 1px; min-height: 13px; margin-top: 4px; text-align: right;
+}
+.detail-note-status.saved { color: var(--accent2); }
+.detail-note-status.error { color: var(--danger); }
 .detail-stats {
   display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; padding: 14px 0 4px;
 }

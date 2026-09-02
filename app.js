@@ -14,6 +14,8 @@ let detailItem = null;
 let detailTypeFilter = 'ALL';
 let hiddenItems = new Set();
 let showHidden = false;
+let itemNotes = {};
+let noteBaseline = '';
 
 // ─── 초기화 ─────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
@@ -37,6 +39,7 @@ async function loadData() {
     records   = (data.records || []).map(normalizeRecord);
     stockData = data.stock     || [];
     hiddenItems = new Set(settings.hiddenItems || []);
+    itemNotes   = settings.itemNotes || {};
 
     lastSyncTime = new Date();
     setSyncStatus('ok');
@@ -127,7 +130,8 @@ async function saveSettings() {
       HARNESS: splitCSV('harness-models'),
     },
     minStock,
-    hiddenItems: [...hiddenItems]
+    hiddenItems: [...hiddenItems],
+    itemNotes
   };
   setLoading(true);
   try {
@@ -497,6 +501,11 @@ function openItemDetail(category, model) {
   renderItemHistory();
 
   const key = category + ':' + model;
+  const noteEl = document.getElementById('detail-note');
+  noteBaseline = itemNotes[key] || '';
+  noteEl.value = noteBaseline;
+  setNoteStatus('');
+
   const isHidden = hiddenItems.has(key);
   const hideBtn = document.getElementById('hide-toggle-btn');
   hideBtn.textContent = isHidden ? '⊕ 숨김 해제' : '⊖ 이 항목 숨기기';
@@ -533,7 +542,48 @@ async function toggleHideItem() {
   closeItemDetail();
 }
 
+function setNoteStatus(msg, cls) {
+  const el = document.getElementById('detail-note-status');
+  el.textContent = msg;
+  el.className = 'detail-note-status' + (cls ? ' ' + cls : '');
+}
+
+function onNoteInput() {
+  const changed = document.getElementById('detail-note').value !== noteBaseline;
+  setNoteStatus(changed ? '수정중 · 입력창 밖을 누르면 저장' : '');
+}
+
+// 메모는 누구나 수정 가능 (PIN 없음). 포커스가 빠질 때 Sheets에 저장된다.
+async function saveItemNote() {
+  if (!detailItem) return;
+  const noteEl = document.getElementById('detail-note');
+  const text   = noteEl.value.trim();
+  if (text === noteBaseline) { setNoteStatus(''); return; }
+
+  const key  = detailItem.category + ':' + detailItem.model;
+  const prev = { ...itemNotes };
+  if (text) itemNotes[key] = text; else delete itemNotes[key];
+
+  setNoteStatus('저장중…');
+  const updatedSettings = { ...settings, itemNotes };
+  const stillOpen = () => detailItem && detailItem.category + ':' + detailItem.model === key;
+  try {
+    await fetchPost({ action: 'saveSettings', settings: updatedSettings });
+    settings = updatedSettings;
+    if (!stillOpen()) return;          // 저장 도중 드로어를 닫거나 다른 항목을 열었으면 UI는 건드리지 않는다
+    noteBaseline = text;
+    setNoteStatus('저장됨', 'saved');
+    setTimeout(() => { if (stillOpen() && noteBaseline === text) setNoteStatus(''); }, 2000);
+  } catch(e) {
+    itemNotes = prev;
+    showToast('메모 저장 실패: ' + e.message, 'error');
+    if (stillOpen()) setNoteStatus('저장 실패 · 다시 시도하세요', 'error');
+  }
+}
+
 function closeItemDetail() {
+  const noteEl = document.getElementById('detail-note');
+  if (detailItem && noteEl.value.trim() !== noteBaseline) saveItemNote();
   document.getElementById('detail-overlay').classList.remove('visible');
   document.getElementById('detail-drawer').classList.remove('visible');
   detailItem = null;
@@ -722,6 +772,7 @@ function getDefaultSettings() {
   return {
     operators:['창고지기'],
     models:{MCU:['STM32F4','ATmega328','ESP32'],PC:['Raspberry Pi 4','Jetson Nano'],SMPS:['24V 5A','12V 10A'],PCB:['메인보드 Rev1','센서보드 Rev2'],HARNESS:['전원 하네스 A','CAN 케이블']},
-    minStock:{}
+    minStock:{},
+    itemNotes:{}
   };
 }
