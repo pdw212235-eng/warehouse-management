@@ -572,15 +572,21 @@ function renderItemHistory() {
 
 function goRecord(type) {
   if (!detailItem) return;
+  const { category, model } = detailItem;   // 드로어를 닫으면 detailItem이 비므로 먼저 복사
   closeItemDetail();
+
+  switchTab('record', document.querySelector('nav button'));
   setType(type);
-  const catSel = document.getElementById('category');
-  catSel.value = detailItem.category;
+
+  document.getElementById('category').value = category;
+  resetSerial();
   updateModels();
-  document.getElementById('model').value = detailItem.model;
+  document.getElementById('model').value = model;
   updateCurrentStock();
-  const navBtn = document.querySelector('nav button');
-  switchTab('record', navBtn);
+
+  document.getElementById('memo').value = '';
+  document.getElementById('qty-input').value = 1;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ─── Data Matrix / QR 스캔 (zxing-wasm) ─────────────────
